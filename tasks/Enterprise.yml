@@ -1,10 +1,14 @@
 ---
+- name: Gathering service facts
+  service_facts:
+  register: services_state
+
 - name: Puppet Enterprise master operation.
   block:
     - name: Download the Puppet Enterprise installation package.
       unarchive:
         src: '{{ puppet_pe_url }}/released/{{ puppet_version }}/puppet-enterprise-{{ puppet_version }}-el-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}.tar.gz'
-        dest: '/tmp/puppet-enterprise-{{ puppet_version }}-el-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}'
+        dest: '/tmp'
         owner: 'root'
         group: 'root'
         remote_src: 'yes'
@@ -24,4 +28,18 @@
         /tmp/puppet-enterprise-{{ puppet_version }}-el-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/puppet-enterprise-installer
         -c /tmp/puppet-enterprise-{{ puppet_version }}-el-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/conf.d/pe.conf
         -q
-  when: puppet_node_type == 'master'
+    - name: Run Puppet agent
+      shell: /usr/local/bin/puppet agent -t
+      changed_when: false
+      failed_when: false
+    - name: Clean up installation package
+      file:
+        state: 'absent'
+        path: '/tmp/puppet-enterprise-{{ puppet_version }}-el-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/'
+    - name: 'Remove Puppet local YUM repositories'
+      yum_repository:
+        name: 'puppet_enterprise'
+        state: 'absent'
+  when:
+    - puppet_node_type == 'master'
+    - services_state.ansible_facts.services["puppet.service"].state != 'running'
