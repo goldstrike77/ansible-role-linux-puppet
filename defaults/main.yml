@@ -1,2 +1,18 @@
 ---
-# defaults file for ansible-role-linux-puppet
+# General parameters #
+puppet_is_install: false # A boolean value, whether install the Puppet.
+puppet_release: 'Enterprise' # Specify the Puppet Release, OpenSource / Enterprise.
+puppet_version: '2019.1.1' # Specify the Puppet version.
+puppet_admin_pass: 'changeme' # The password to log into the Puppet Enterprise console.
+puppet_node_type: 'master' # Define node roles, compilers / master / replica.
+
+# Listen port #
+puppet_port: # Puppet server listen, don't modify it.
+  Master: '8140' # Accept inbound traffic/requests from agents.
+  Console: '443' # Accept HTTPS traffic from end users.
+  API: '4433' # Classifier / console services API endpoint.
+  PuppetDB: '8081' # Accepts PuppetDB traffic/requests.
+  Orchestrator: '8142-8143' # Accept connections from Puppet Communications Protocol brokers to relay communications.
+  CodeManager: '8170' # Deploy environments, run webhooks, and make API calls.
+  PostgreSQL: '5432' # PostgreSQL data between the master and replica.
+  Razor: '8150-8151' # Node classified as a Razor server.

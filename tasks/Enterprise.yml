@@ -1,0 +1,27 @@
+---
+- name: Puppet Enterprise master operation.
+  block:
+    - name: Download the Puppet Enterprise installation package.
+      unarchive:
+        src: '{{ puppet_pe_url }}/released/{{ puppet_version }}/puppet-enterprise-{{ puppet_version }}-el-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}.tar.gz'
+        dest: '/tmp/puppet-enterprise-{{ puppet_version }}-el-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}'
+        owner: 'root'
+        group: 'root'
+        remote_src: 'yes'
+        validate_certs: 'no'
+      register: puppet_download_status
+      until: puppet_download_status is succeeded
+      retries: 3
+      delay: 5
+    - name: Provide a Puppet Enterprise configuration file.
+      template:
+        src: 'pe.conf.j2'
+        dest: '/tmp/puppet-enterprise-{{ puppet_version }}-el-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/conf.d/pe.conf'
+        owner: 'root'
+        group: 'root'
+    - name: Installs Puppet Enterprise.
+      shell: >
+        /tmp/puppet-enterprise-{{ puppet_version }}-el-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/puppet-enterprise-installer
+        -c /tmp/puppet-enterprise-{{ puppet_version }}-el-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/conf.d/pe.conf
+        -q
+  when: puppet_node_type == 'master'

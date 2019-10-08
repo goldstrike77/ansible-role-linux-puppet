@@ -1,0 +1,4 @@
+---
+puppet_dependent_packages:
+  - 'policycoreutils-python'
+  - 'python-passlib'

@@ -1,2 +1,12 @@
 ---
-# tasks file for ansible-role-linux-puppet
+- name: Include tasks for specific OS.
+  include: '{{ ansible_os_family }}.yml'
+
+- name: Straight to getenforce selinux status.
+  include: 'selinux.yml'
+
+- name: Include firewall tasks
+  include: 'firewall.yml'
+
+- name: 'Installation the Puppet {{ puppet_release }}'
+  include: '{{ puppet_release }}.yml'
