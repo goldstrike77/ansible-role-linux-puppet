@@ -5,8 +5,11 @@
 - name: Straight to getenforce selinux status.
   include: 'selinux.yml'
 
-- name: Include firewall tasks
+- name: Include firewall tasks.
   include: 'firewall.yml'
+
+- name: Configuration the node environment.
+  include: 'configureation.yml'
 
 - name: 'Installation the Puppet {{ puppet_release }}'
   include: '{{ puppet_release }}.yml'

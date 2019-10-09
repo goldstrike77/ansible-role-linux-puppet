@@ -1,2 +1,18 @@
 ---
 puppet_pe_url: 'http://d2getqyrpmrvl0.cloudfront.net'
+
+puppet_kernel_parameters:
+  - { variable: 'net.ipv4.neigh.default.gc_thresh3', value: '4096' }
+  - { variable: 'net.ipv4.neigh.default.gc_thresh2', value: '2048' }
+  - { variable: 'net.ipv4.neigh.default.gc_thresh1', value: '1024' }
+
+puppet_master: "\
+  {% set _puppet_master = [] %}\
+  {% for host in groups[group_names[-1]] %}\
+    {% if puppet_is_install | bool %}\
+      {% if puppet_node_type == 'master' %}\
+        {% if _puppet_master.append(hostvars[host]['inventory_hostname']) %}{% endif %}\
+      {% endif %}\
+    {% endif %}\
+  {% endfor %}\
+  {{ _puppet_master }}"

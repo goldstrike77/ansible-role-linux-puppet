@@ -1,9 +1,31 @@
 ---
+- name: Creating Puppet data & logs folder
+  file:
+    dest: '{{ puppet_path }}/{{ item }}'
+    state: 'directory'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+  loop:
+    - 'puppetlabs'
+    - 'puppetlabs_logs'
+
+- name: Mount and bind Puppet data & logs volume
+  mount:
+    src: '{{ puppet_path }}/{{ item.src }}'
+    path: '{{ item.dest }}'
+    opts: 'bind'
+    state: 'mounted'
+    fstype: 'none'
+  loop:
+    - { src: 'puppetlabs', dest: '/opt/puppetlabs' }
+    - { src: 'puppetlabs_logs', dest: '/var/log/puppetlabs' }
+
 - name: Gathering service facts
   service_facts:
   register: services_state
 
-- name: Puppet Enterprise master operation.
+- name: Puppet Enterprise master and replica operation.
   block:
     - name: Download the Puppet Enterprise installation package.
       unarchive:
@@ -28,6 +50,21 @@
         /tmp/puppet-enterprise-{{ puppet_version }}-el-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/puppet-enterprise-installer
         -c /tmp/puppet-enterprise-{{ puppet_version }}-el-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/conf.d/pe.conf
         -q
+    - name: Configuring GIT Server SSH access private key.
+      template:
+        src: 'id-control_repo.rsa.j2'
+        dest: '/etc/puppetlabs/puppetserver/ssh/id-control_repo.rsa'
+        owner: 'pe-puppet'
+        group: 'pe-puppet'
+        mode: '0600'
+    - name: Generate an OpenSSL public key in OpenSSH v2 format.
+      openssl_publickey:
+        path: '/etc/puppetlabs/puppetserver/ssh/id-control_repo.rsa.pub'
+        privatekey_path: '/etc/puppetlabs/puppetserver/ssh/id-control_repo.rsa'
+        format: 'OpenSSH'
+        owner: 'pe-puppet'
+        group: 'pe-puppet'
+        mode: '0600'
     - name: Run Puppet agent
       shell: /usr/local/bin/puppet agent -t
       changed_when: false
@@ -42,4 +79,29 @@
         state: 'absent'
   when:
     - puppet_node_type == 'master'
-    - services_state.ansible_facts.services["puppet.service"].state != 'running'
+    - services_state.ansible_facts.services["puppet.service"].state is not defined or services_state.ansible_facts.services["puppet.service"].state != 'running'
+
+- name: Generate Puppet access token using the API endpoint
+  uri:
+    url: 'https://{{ ansible_default_ipv4.address }}:{{ puppet_port.API }}/rbac-api/v1/auth/token'
+    method: 'POST'
+    force_basic_auth: 'yes'
+    status_code: '200'
+    body: '{"login": "admin", "password": "{{ puppet_admin_pass }}", "lifetime": "1h"}'
+    body_format: 'json'
+    validate_certs: 'no'
+    headers:
+      X-Requested-By: '{{ ansible_default_ipv4.address }}'
+      cache-control: 'no-cache'
+  environment:
+    no_proxy: '{{ ansible_default_ipv4.address }}'
+  register: token_status
+  until: token_status.status == 200
+  retries: 3
+  delay: 3
+  no_log: true
+  when:
+    - puppet_node_type == 'master'
+    - puppet_master[0] | upper in ansible_hostname | upper
+
+- debug: var=token_status.json.token

@@ -16,7 +16,6 @@
   #--------------------------------------------------------------------------
   "console_admin_password": "{{ puppet_admin_pass }}"
 
-
   #--------------------------------------------------------------------------
   # PE Component assignments.
   #
@@ -105,11 +104,11 @@
   #"pe_install::puppet_master_dnsaltnames": ["puppet"]
 
   #Enabling this configures code manager, all three below values should be enabled and populated at the same time.
-  #"puppet_enterprise::profile::master::code_manager_auto_configure": true
+  "puppet_enterprise::profile::master::code_manager_auto_configure": true
 
   #The ssh url to your existing control repo.
-  #"puppet_enterprise::profile::master::r10k_remote": "git@your.git.server.com:puppet/control.git"
+  "puppet_enterprise::profile::master::r10k_remote": "git@{{ puppet_git_server }}:{{ puppet_git_user }}/{{ puppet_git_repository }}.git"
 
   #The private key to your puppetmaster for establishing key-based ssh authentication to your vcs.
-  #"puppet_enterprise::profile::master::r10k_private_key": "/etc/puppetlabs/puppetserver/ssh/id-control_repo.rsa"
+  "puppet_enterprise::profile::master::r10k_private_key": "/etc/puppetlabs/puppetserver/ssh/id-control_repo.rsa"
 }

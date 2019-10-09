@@ -4,7 +4,14 @@ puppet_is_install: false # A boolean value, whether install the Puppet.
 puppet_release: 'Enterprise' # Specify the Puppet Release, OpenSource / Enterprise.
 puppet_version: '2019.1.1' # Specify the Puppet version.
 puppet_admin_pass: 'changeme' # The password to log into the Puppet Enterprise console.
-puppet_node_type: 'master' # Define node roles, compilers / master / replica.
+puppet_node_type: 'master' # Define node roles, compilers / master.
+puppet_path: '/data' # Specify the Puppet data directory.
+
+# Code manager parameters #
+puppet_git_server: 'gitlab.example.com'
+puppet_git_user: 'puppet'
+puppet_git_repository: 'control'
+puppet_git_private_key: 'MIICXAIBAAKBgQCflGR2rnCkBsWsOdmgQpNkmAHxIa4evob3p030LBajZGE2sbom8aEPuWGZnNuFxL13uyJqC/pv/z8gVjYPuTWPpnwBbA3agLcb5XIZtSuPVKdV4VO4CtQR2yCwGn/q59nMX8dZbWEmyNs7U9cZuVBH8HuWkRC4s6YkmDpbaA51JwIDAQABAoGAMeeHL3JH+ZPAl6aTv0FytJ+w48bDnAu7S5F/mF99SOWoXSFhdLJVywQPWKmsIP4wvlPAZGeQjxvEkwlC6NHjxKHlfFxJH+Gk09LFGrDbBU6epKAPkrdyDw+VN+sCougQBZTaSf1zaLOfreOVMYPZ+6BLpswqhVYGvrQFvYsw+wkCQQD+afGzpvFEX63BGQYafINQ4IIZqFU1XlcWAflVJnIv9x6Db7F7GPFRfbU0VUET1SEdxlKg6kM8bbZHgmfyY/7dAkEAoJMWtJ+q2/puFaWqK2Gjm7QZtRsINmRGBcGzaHK3c3yIjVbiMcsGDPN1K3KLM9upmUvw/RY255mALh0FGPop0wJBAIVfmxN4gGE824Uwji+SePEMUYgL5GevBm6GKGUIW7Jjlb6H7n4/DDuRcE54Jz6za8IFN0oepZLnXTjN15qN640CQFwbo4WepSqkH2uJaPCThH73M1vgkrhokoYQ03HRhAvZ3pZ8xSlc1S6upIJ0pQbtNP77QdRbXslBEvbgrKDkNwMCQHCZ+U/jHEO9XmcJoWx1oR+fex8l/N98jDPp2oO4o5xdcgD0J5PPL3icWgoi4QFEAI+c9Z9lB0O6iRNItO3ZGPg='
 
 # Listen port #
 puppet_port: # Puppet server listen, don't modify it.

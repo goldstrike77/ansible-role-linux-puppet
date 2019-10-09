@@ -2,3 +2,5 @@
 puppet_dependent_packages:
   - 'policycoreutils-python'
   - 'python-passlib'
+  - 'python-cryptography'
+  - 'pyOpenSSL'
