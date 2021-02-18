@@ -11,7 +11,7 @@ puppet_master: "\
   {% for host in groups[group_names[-1]] %}\
     {% if puppet_is_install | bool %}\
       {% if puppet_node_type == 'master' %}\
-        {% if _puppet_master.append(hostvars[host]['inventory_hostname']) %}{% endif %}\
+        {% if _puppet_master.append(hostvars[host]['ansible_hostname']) %}{% endif %}\
       {% endif %}\
     {% endif %}\
   {% endfor %}\

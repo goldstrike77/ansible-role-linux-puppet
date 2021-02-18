@@ -102,6 +102,6 @@
   no_log: true
   when:
     - puppet_node_type == 'master'
-    - puppet_master[0] | upper in ansible_hostname | upper
+    - puppet_master[0] | upper in ansible_hostname | lower
 
 - debug: var=token_status.json.token
